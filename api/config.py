@@ -1,5 +1,8 @@
+import os
 from pydantic_settings import BaseSettings
 from functools import lru_cache
+
+DOTENV = os.path.join(os.path.dirname(__file__), ".env")
 
 
 class Settings(BaseSettings):
@@ -9,6 +12,16 @@ class Settings(BaseSettings):
     APP_DESCRIPTION: str = (
         "An API to scan and enhance images to look like scanned documents."
     )
+
+    AUTO_RELOAD: bool = True
+    LOG_LEVEL: str = "info"
+
+    class Config:
+        env_file = DOTENV
+        env_file_encoding = "utf-8"
+        env_ignore_empty = True
+        env_nested_delimiter = "__"
+        extra = "allow"
 
 
 class DevelopmentSettings(Settings):
