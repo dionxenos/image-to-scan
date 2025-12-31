@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Container, Box } from "@mui/material";
 import DropZone from "./DropZone";
 import ImageComparisonGallery from "./ImageComparisonGallery";
+import apiService from "../services/apiService";
 
 interface FileUploaderProps {
   onFileSelect?: (files: FileList) => void;
@@ -16,8 +17,6 @@ export interface ScannedImage {
   isLoading: boolean;
   error: string | null;
 }
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 export default function FileUploader({
   onFileSelect,
@@ -41,19 +40,7 @@ export default function FileUploader({
     ]);
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const response = await fetch(`${API_BASE_URL}/scan`, {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error(`API error: ${response.statusText}`);
-      }
-
-      const blob = await response.blob();
+      const blob = await apiService.scanImage(file);
       const scannedImageUrl = URL.createObjectURL(blob);
 
       setScannedImages((prev) =>
