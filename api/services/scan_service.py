@@ -28,9 +28,6 @@ def scan_image(contents: bytes) -> str:
     edged = cv2.Canny(gray, 75, 200)
     # show the original image and the edge detected image
     logger.info("STEP 1: Edge Detection")
-    cv2.imshow("Image", image)
-    cv2.imshow("Edged", edged)
-    cv2.destroyAllWindows()
 
     # find the contours in the edged image, keeping only the
     # largest ones, and initialize the screen contour
@@ -49,9 +46,6 @@ def scan_image(contents: bytes) -> str:
             break
     # show the contour (outline) of the piece of paper
     logger.info("STEP 2: Find contours of paper")
-    cv2.drawContours(image, [screenCnt], -1, (0, 255, 0), 2)
-    cv2.imshow("Outline", image)
-    cv2.destroyAllWindows()
 
     # apply the four point transform to obtain a top-down
     # view of the original image
@@ -63,8 +57,6 @@ def scan_image(contents: bytes) -> str:
     warped = (warped > T).astype("uint8") * 255
     # show the original and scanned images
     logger.info("STEP 3: Apply perspective transform")
-    cv2.imshow("Original", imutils.resize(orig, height=650))
-    cv2.imshow("Scanned", imutils.resize(warped, height=650))
 
     # Encode the result image
     success, buffer = cv2.imencode(".png", warped)
