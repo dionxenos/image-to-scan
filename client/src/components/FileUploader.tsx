@@ -1,5 +1,7 @@
 import { useState } from "react";
-import "./FileUploader.css";
+import { Container, Box } from "@mui/material";
+import DropZone from "./DropZone";
+import ImageComparisonGallery from "./ImageComparisonGallery";
 
 interface FileUploaderProps {
   onFileSelect?: (files: FileList) => void;
@@ -8,20 +10,78 @@ interface FileUploaderProps {
   disabled?: boolean;
 }
 
+export interface ScannedImage {
+  originalFile: File;
+  scannedImageUrl: string;
+  isLoading: boolean;
+  error: string | null;
+}
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+
 export default function FileUploader({
   onFileSelect,
-  accept = "*/*",
+  accept = "image/*",
   multiple = false,
   disabled = false,
 }: FileUploaderProps) {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isDragActive, setIsDragActive] = useState(false);
+  const [scannedImages, setScannedImages] = useState<ScannedImage[]>([]);
+
+  const uploadAndScan = async (file: File) => {
+    setScannedImages((prev) => [
+      ...prev,
+      {
+        originalFile: file,
+        scannedImageUrl: "",
+        isLoading: true,
+        error: null,
+      },
+    ]);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch(`${API_BASE_URL}/scan`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.statusText}`);
+      }
+
+      const blob = await response.blob();
+      const scannedImageUrl = URL.createObjectURL(blob);
+
+      setScannedImages((prev) =>
+        prev.map((img) =>
+          img.originalFile === file
+            ? { ...img, scannedImageUrl, isLoading: false, error: null }
+            : img
+        )
+      );
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to scan image";
+      setScannedImages((prev) =>
+        prev.map((img) =>
+          img.originalFile === file
+            ? { ...img, isLoading: false, error: errorMessage }
+            : img
+        )
+      );
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
       setSelectedFiles(files);
       onFileSelect?.(e.target.files);
+      files.forEach((file) => uploadAndScan(file));
     }
   };
 
@@ -44,64 +104,49 @@ export default function FileUploader({
       const files = Array.from(e.dataTransfer.files);
       setSelectedFiles(files);
       onFileSelect?.(e.dataTransfer.files);
+      files.forEach((file) => uploadAndScan(file));
     }
   };
 
   const removeFile = (index: number) => {
     const updated = selectedFiles.filter((_, i) => i !== index);
     setSelectedFiles(updated);
+    const fileToRemove = selectedFiles[index];
+    setScannedImages((prev) =>
+      prev.filter((img) => img.originalFile !== fileToRemove)
+    );
+  };
+
+  const downloadScannedImage = (scannedImage: ScannedImage) => {
+    const link = document.createElement("a");
+    link.href = scannedImage.scannedImageUrl;
+    link.download = `scanned_${scannedImage.originalFile.name}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
-    <div className="file-uploader">
-      <div
-        className={`drop-zone ${isDragActive ? "active" : ""} ${
-          disabled ? "disabled" : ""
-        }`}
-        onDragEnter={handleDrag}
-        onDragLeave={handleDrag}
-        onDragOver={handleDrag}
-        onDrop={handleDrop}
-      >
-        <input
-          type="file"
-          id="file-input"
-          onChange={handleFileChange}
+    <Container maxWidth="md">
+      <Box sx={{ width: "100%" }}>
+        <DropZone
+          onDrop={handleDrop}
+          onDragEnter={handleDrag}
+          onDragLeave={handleDrag}
+          onDragOver={handleDrag}
+          isDragActive={isDragActive}
+          disabled={disabled}
           accept={accept}
           multiple={multiple}
-          disabled={disabled}
-          style={{ display: "none" }}
+          onChange={handleFileChange}
         />
-        <label htmlFor="file-input" className="upload-label">
-          <div className="upload-icon">📁</div>
-          <p className="upload-text">
-            Drag files here or <span className="link">click to select</span>
-          </p>
-        </label>
-      </div>
 
-      {selectedFiles.length > 0 && (
-        <div className="selected-files">
-          <h3>Selected Files:</h3>
-          <ul>
-            {selectedFiles.map((file, index) => (
-              <li key={`${file.name}-${index}`}>
-                <span>{file.name}</span>
-                <span className="file-size">
-                  {(file.size / 1024).toFixed(2)} KB
-                </span>
-                <button
-                  onClick={() => removeFile(index)}
-                  className="remove-btn"
-                  aria-label="Remove file"
-                >
-                  ✕
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </div>
+        <ImageComparisonGallery
+          scannedImages={scannedImages}
+          onDownload={downloadScannedImage}
+          onRemove={removeFile}
+        />
+      </Box>
+    </Container>
   );
 }

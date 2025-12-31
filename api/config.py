@@ -13,7 +13,11 @@ class Settings(BaseSettings):
         "An API to scan and enhance images to look like scanned documents."
     )
 
-    CORS_ORIGINS: list[str] = ["http://localhost", "http://localhost:8000"]
+    CORS_ORIGINS: list[str] = [
+        "http://localhost",
+        "http://localhost:8000",
+        "http://localhost:5173",
+    ]
     CORS_METHODS: list[str] = ["OPTIONS", "GET", "POST", "PUT", "DELETE"]
     CORS_HEADERS: list[str] = ["*"]
 

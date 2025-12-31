@@ -1,18 +1,22 @@
-import "./App.css";
+import { ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import { Box } from "@mui/material";
+import { theme } from "./theme";
 import FileUploader from "./components/FileUploader";
 import Navbar from "./components/Navbar";
 
 function App() {
   return (
-    <>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
       <Navbar />
-      <main>
+      <Box component="main" sx={{ paddingBottom: 4 }}>
         <FileUploader
           multiple={true}
           onFileSelect={(files) => console.log(files)}
         />
-      </main>
-    </>
+      </Box>
+    </ThemeProvider>
   );
 }
 
