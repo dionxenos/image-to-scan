@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     APP_DESCRIPTION: str = (
         "An API to scan and enhance images to look like scanned documents."
     )
+    PORT: int = 8000
 
     CORS_ORIGINS: list[str] = [
         "http://localhost",
