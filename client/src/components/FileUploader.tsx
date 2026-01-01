@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Container, Box } from "@mui/material";
+import { Container, Box, Button } from "@mui/material";
 import DropZone from "./DropZone";
 import ImageComparisonGallery from "./ImageComparisonGallery";
 import apiService from "../services/apiService";
@@ -92,10 +92,7 @@ export default function FileUploader({
   const removeFile = (index: number) => {
     const updated = selectedFiles.filter((_, i) => i !== index);
     setSelectedFiles(updated);
-    const fileToRemove = selectedFiles[index];
-    setScannedImages((prev) =>
-      prev.filter((img) => img.originalFile !== fileToRemove)
-    );
+    setScannedImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const downloadScannedImage = (scannedImage: ScannedImage) => {
@@ -121,7 +118,18 @@ export default function FileUploader({
           multiple={multiple}
           onChange={handleFileChange}
         />
-
+        {scannedImages.length > 0 && (
+          <Button
+            variant="contained"
+            onClick={() => {
+              setSelectedFiles([]);
+              setScannedImages([]);
+            }}
+            sx={{ mt: 2 }}
+          >
+            Clear Selection
+          </Button>
+        )}
         <ImageComparisonGallery
           scannedImages={scannedImages}
           onDownload={downloadScannedImage}
