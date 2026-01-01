@@ -1,12 +1,6 @@
 import { Box, Grid, Typography } from "@mui/material";
 import ScannedImageCard from "./ScannedImageCard";
-
-interface ScannedImage {
-  originalFile: File;
-  scannedImageUrl: string;
-  isLoading: boolean;
-  error: string | null;
-}
+import { type ScannedImage } from "../types";
 
 interface ScannedImageGalleryProps {
   scannedImages: ScannedImage[];

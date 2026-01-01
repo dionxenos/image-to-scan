@@ -7,11 +7,7 @@ import {
   Typography,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
-
-interface FileItem {
-  name: string;
-  size: number;
-}
+import { type FileItem } from "../types";
 
 interface FileListProps {
   files: FileItem[];

@@ -3,19 +3,13 @@ import { Container, Box } from "@mui/material";
 import DropZone from "./DropZone";
 import ImageComparisonGallery from "./ImageComparisonGallery";
 import apiService from "../services/apiService";
+import { type ScannedImage } from "../types";
 
 interface FileUploaderProps {
   onFileSelect?: (files: FileList) => void;
   accept?: string;
   multiple?: boolean;
   disabled?: boolean;
-}
-
-export interface ScannedImage {
-  originalFile: File;
-  scannedImageUrl: string;
-  isLoading: boolean;
-  error: string | null;
 }
 
 export default function FileUploader({

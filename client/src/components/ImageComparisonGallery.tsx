@@ -11,13 +11,7 @@ import {
 } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import DeleteIcon from "@mui/icons-material/Delete";
-
-interface ScannedImage {
-  originalFile: File;
-  scannedImageUrl: string;
-  isLoading: boolean;
-  error: string | null;
-}
+import { type ScannedImage } from "../types";
 
 interface ImageComparisonGalleryProps {
   scannedImages: ScannedImage[];
