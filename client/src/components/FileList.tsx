@@ -54,8 +54,10 @@ export default function FileList({ files, onRemove }: FileListProps) {
             <ListItemText
               primary={file.name}
               secondary={`${(file.size / 1024).toFixed(2)} KB`}
-              primaryTypographyProps={{ variant: "body2" }}
-              secondaryTypographyProps={{ variant: "caption" }}
+              slotProps={{
+                primary: { variant: "body2" },
+                secondary: { variant: "caption" },
+              }}
             />
           </ListItem>
         ))}
