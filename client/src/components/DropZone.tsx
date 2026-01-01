@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Paper, Typography, useTheme } from "@mui/material";
+import { Paper, Typography, useTheme } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 interface DropZoneProps {
@@ -35,7 +35,9 @@ export default function DropZone({
       onDrop={onDrop}
       sx={{
         border: "2px dashed",
-        borderColor: isDragActive ? theme.palette.primary.main : theme.palette.divider,
+        borderColor: isDragActive
+          ? theme.palette.primary.main
+          : theme.palette.divider,
         borderRadius: 2,
         padding: 5,
         textAlign: "center",
@@ -46,10 +48,12 @@ export default function DropZone({
           : theme.palette.background.default,
         opacity: disabled ? 0.6 : 1,
         pointerEvents: disabled ? "none" : "auto",
-        "&:hover": !disabled && {
-          borderColor: theme.palette.primary.light,
-          backgroundColor: theme.palette.action.selected,
-        },
+        "&:hover": !disabled
+          ? undefined
+          : {
+              borderColor: theme.palette.primary.light,
+              backgroundColor: theme.palette.action.selected,
+            },
       }}
     >
       <input
@@ -77,7 +81,11 @@ export default function DropZone({
         />
         <Typography variant="body2" color="textSecondary">
           Drag files here or{" "}
-          <Typography component="span" variant="body2" sx={{ color: theme.palette.primary.main, fontWeight: 600 }}>
+          <Typography
+            component="span"
+            variant="body2"
+            sx={{ color: theme.palette.primary.main, fontWeight: 600 }}
+          >
             click to select
           </Typography>
         </Typography>
